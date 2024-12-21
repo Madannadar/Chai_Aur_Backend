@@ -1,1 +1,11 @@
 npm init (initializea a empty node application)
+
+json formater ko use karo for understanding the json response
+
+vite is a bundeler it bundeler for understanding the html js css for browser
+
+axios is used more then fetch it gives more additional
+
+cors policy provides safty access 
+
+cross origin means dont allow every one we can specify who to allow by url
