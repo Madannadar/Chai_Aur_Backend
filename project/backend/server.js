@@ -2,10 +2,11 @@
 import express from 'express'  // async kam karta h
 
 const app = express()
+app.use(express.static("dist"))
 
-app.get('/', (req, res) => {
-    res.send("sever is ready")
-});
+// app.get('/', (req, res) => {
+//     res.send("sever is ready")
+// });
 
 // get a list of 5 jokes
 
