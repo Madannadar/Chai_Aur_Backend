@@ -1,5 +1,11 @@
 npm init (initializea a empty node application)
 
+>npm i -D nodemon
+
+ "scripts": {
+    "dev": " nodemon src/index.js"
+  },
+
 json formater ko use karo for understanding the json response
 
 vite is a bundeler it bundeler for understanding the html js css for browser
@@ -14,6 +20,9 @@ fresher will start with the work and exprence person will ask questions for why 
 
 mongoose stores in plural and lowercase
 
+git only tracks fils not folder so we can not push empty folders 
+
+.gitkeep a empty file that will allow git to push empty folder
 ################################softwares #################################
 moon modler is a software that generates sql querys from diagram/ er diagram
 eraser.io alternative for moon modler
@@ -25,4 +34,6 @@ first register page because it stores the data and login page then because it va
 
 ################################system to follow when making a new project  #################################
 1. have a clear idea of the data that needs to be stored and need to take input have a structure for it(data points)
+
+2. prettier needs to be installed for group ppl working on a project it will define basic comands like 4 spaces for tab or 2 spaces for tab
 

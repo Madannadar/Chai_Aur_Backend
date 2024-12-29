@@ -1,0 +1,7 @@
+// /.vscode
+node_modules
+// *.env
+.env
+// .env.*
+
+// this file will not be made changes by pretter
