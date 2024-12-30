@@ -31,6 +31,13 @@ eraser.io alternative for moon modler (used in this project)
 
 nodemon, mongoose, mongodb, express, dotenv, cookie parser, cors
 
+mongodb aggriggation paginate-v2 
+npm install mongoose-aggregate-paginate-v2
+
+bcrypt(it helps us to hash the password)
+npm i bcrypt
+npm i jsonwebtoken (jwt is a bearer token) it 
+
 ################################ system to follow when making a new project  #################################
 1. have a clear idea of the data that needs to be stored and need to take input have a structure for it(data points)
 
