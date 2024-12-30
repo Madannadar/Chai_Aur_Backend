@@ -1,5 +1,4 @@
 // require('dotenv').config({path: './env'})
-
 import connectDB from "./database/index.js"
 import dotenv from 'dotenv';
 
@@ -7,6 +6,24 @@ import dotenv from 'dotenv';
 dotenv.config({ path: './.env' }); // bhai .env likna h hamesa 
 // require('dotenv').config({path: './env'})
 connectDB()
+
+.then(() => {
+    app.listen(process.env.PORT || 5000, () => {
+        console.log(`server running at port : ${process.env.PORT}`);
+    } )
+})
+.catch((err) => {
+    console.log("mongo db connection error:" , err);
+})
+
+
+
+
+
+
+
+
+
 
 // first aproach 1
 /*
