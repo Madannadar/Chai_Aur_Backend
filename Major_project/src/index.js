@@ -1,7 +1,7 @@
 // require('dotenv').config({path: './env'})
 import connectDB from "./database/index.js"
 import dotenv from 'dotenv';
-
+import {app} from './app.js'
 // Configure dotenv
 dotenv.config({ path: './.env' }); // bhai .env likna h hamesa 
 // require('dotenv').config({path: './env'})
