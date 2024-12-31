@@ -48,7 +48,7 @@ const userSchema = new Schema({
 
 userSchema.pre("save",async function(next){ // this will encrypt the password
     if(this.isModified("password")){
-        this.password = bcrypt.hash(this.password, 10) // 10 rounds
+        this.password = await bcrypt.hash(this.password, 10) // 10 rounds
         next()
     }     
 }) // pre hook it will be executed just before saving and many more it is a middleware , here we are using save and not to use arrow function beause it does not have the context of this.
