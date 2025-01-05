@@ -54,8 +54,10 @@ const registerUser = asyncHandler( async(req, res) => {
     }
     
     const avatar = await uploadOnCloudinary(avatarLocalPath)
+    console.log("avatarLocalPath",avatarLocalPath);
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
-
+    console.log(coverImageLocalPath);
+    
     if(!avatar){
         throw new ApiError(400, "avatar is nedded checking after uploading to cloudinary")
     }
