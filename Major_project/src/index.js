@@ -27,6 +27,9 @@ connectDB()
 
 // first aproach 1
 /*
+import mongoose from "mongoose"
+import { DB_NAME } from "./constents"
+
 import express from 'express'
 const app = express()
 
