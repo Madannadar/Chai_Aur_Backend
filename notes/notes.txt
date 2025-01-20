@@ -25,6 +25,8 @@ git only tracks fils not folder so we can not push empty folders
 first register page because it stores the data and login page then because it validates the data
 
 .gitkeep a empty file that will allow git to push empty folder
+
+access token is expired in short term and referesh token is expired in long term
 ################################softwares #################################
 moon modler is a software that generates sql querys from diagram/ er diagram
 eraser.io alternative for moon modler (used in this project)
