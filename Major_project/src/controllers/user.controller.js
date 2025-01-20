@@ -75,7 +75,7 @@ const registerUser = asyncHandler( async(req, res) => {
     const createdUser = User.findById(user._id).select(
         "-password -refreshToken" // all this will be not selected because all are seleced by default
     ) // finding if the user exist
-    console.log('createduser',createdUser);
+    // console.log('createduser',createdUser);
     
     if(!createdUser){
         throw new ApiError(500, "something went wrong while registeing the user ")
