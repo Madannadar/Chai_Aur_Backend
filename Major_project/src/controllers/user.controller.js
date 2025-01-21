@@ -112,16 +112,23 @@ const loginUser = asyncHandler(async (req, res) => {
     // send this token by cookie
 
     const {email, username, password} = req.body
+    console.log("email",email, "username",username, "password",password);
+    
 
-    if( !username || !email){
+    if(!username && !email){
         throw new ApiError(400, "username or email is required")
     }
 
-    const user = await User.findOne({ $or: [{username}, {email}] }) // User is a user made by mongodb to use findOne we use User 
+    const user = await User.findOne({ 
+        $or: [{username}, {email}] 
+    }) // User is a user made by mongodb to use findOne we use User 
+    console.log("user ka username",user.username, "user ka",user.email);
+    console.log("Stored Password (Hashed):", user.password);
     if(!user) {
         throw new ApiError(404, "user does not exist")
     }
-
+    console.log("password",password);
+    
     const isPasswordValid = await user.isPasswordCorrect(password)
     if(!isPasswordValid) {
         throw new ApiError(401, "password incorrect")
