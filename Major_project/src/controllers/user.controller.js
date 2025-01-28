@@ -93,7 +93,7 @@ const registerUser = asyncHandler( async(req, res) => {
     const createdUser = User.findById(user._id).select(
         "-password -refreshToken" // all this will be not selected because all are seleced by default
     ) // finding if the user exist
-    // console.log('createduser',createdUser);
+    console.log('createduser',createdUser);
     
     if(!createdUser){
         throw new ApiError(500, "something went wrong while registeing the user ")
@@ -131,8 +131,8 @@ const loginUser = asyncHandler(async (req, res) => {
     }
     // console.log("password",password);
     
-    // const isPasswordValid = await user.isPasswordCorrect(password)
-    const isPasswordValid = true
+    const isPasswordValid = await user.isPasswordCorrect(password)
+    // const isPasswordValid = true
     if(!isPasswordValid) {
         throw new ApiError(401, "password incorrect")
     }
