@@ -10,7 +10,9 @@ const generateAccessAndRefereshTokens = async(userId) => {
         const user = await User.findById(userId)
         // console.log(user);
         const accessToken = user.generateAccessToken()
+        console.log("accessToken",accessToken);
         const refereshToken = user.generateRefreshToken()
+        console.log("refereshToken",refereshToken);
 
         user.refreshToken = refereshToken
         await user.save({validateBeforeSave: false}) // while using mongodb method all the checking will kickin from the model so we use {validateBeforeSave: false}
@@ -37,6 +39,8 @@ const registerUser = asyncHandler( async(req, res) => {
 
     const {fullName, username, email, password} = req.body  // to get details from frontend
     // console.log("email:",email);
+    console.log(req.files);
+
 
     // for one 
     // if(email === ""){
@@ -117,12 +121,12 @@ const loginUser = asyncHandler(async (req, res) => {
     // console.log("email",email, "username",username, "password",password);
     
 
-    if(!username && !email){
+    if(!(username || email)){
         throw new ApiError(400, "username or email is required")
     }
 
     const user = await User.findOne({ 
-        $or: [{username}, {email}] 
+        $or: [{username}, {email}]  // $or is a mongodb operator
     }) // User is a user made by mongodb to use findOne we use User 
     // console.log("user ka username",user.username, "user ka",user.email);
     // console.log("Stored Password (Hashed):", user.password);
@@ -139,7 +143,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const {accessToken, refereshToken} = await generateAccessAndRefereshTokens(user._id)
 
-    const loggedInUser = await User.findById(user._id)
+    const loggedInUser = await User.findById(user._id).
     select("-password -refreshToken")
 
     const options = {
