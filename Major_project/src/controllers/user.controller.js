@@ -233,9 +233,45 @@ const refereshAccessToken = asyncHandler(async (req, res) => {
         throw new ApiError(401,error?.message || "invalid refresh token")
     }
 })
+
+const changeCurrentPassword = asyncHandler(async(req, res) => {
+    // req.body => currentPassword, newPassword
+    // find the user
+    // check the current password
+    // update the password
+    // return response
+
+    const {oldPassword, newPassword} = req.body
+
+    const user = await User.findById(req.user?.id)
+    const ispasswordCorrect = await user.isPasswordCorrect(oldPassword)
+    
+    if(!ispasswordCorrect){
+        throw new ApiError(401, "current password is incorrect")
+    }
+
+    user.password = newPassword
+    await user.save({validateBeforeSave: false})
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200,{}, "password changed successfully"))
+    // return res.status(200).json(new ApiResponse(200,{}, "password changed successfully"))
+
+})
+
+const getCurrentUser = asyncHandler(async(req, res) => {
+    return res
+    .status(200)
+    .json(new ApiResponse(200, req.user, "user found and fetched successfully"))
+})
+
+
 export {
     registerUser,
     loginUser,
     logoutUser,
-    refereshAccessToken
+    refereshAccessToken,
+    changeCurrentPassword,
+    getCurrentUser
 }
