@@ -149,7 +149,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const options = {
         httpOnly: true,
         secure: true,
-    } // now only the cookies can be modified by server only
+    } // now the cookies can be modified by server only
 
     return res.status(200)
     .cookie("accessToken",accessToken, options)
