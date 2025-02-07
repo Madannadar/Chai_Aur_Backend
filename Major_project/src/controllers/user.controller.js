@@ -192,7 +192,7 @@ const logoutUser = asyncHandler(async(req, res) => {
 const refereshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefereshToken = req.cookie.refereshToken || req.body.refereshToken // body se mobile se aata h refershToken
 
-    if (incomingRefereshToken) {
+    if (!incomingRefereshToken) {
         throw new ApiError(401, "uauthorized request") // because the token sahi nahi h 
     }
 
