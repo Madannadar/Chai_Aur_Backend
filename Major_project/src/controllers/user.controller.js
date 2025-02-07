@@ -3,6 +3,7 @@ import { ApiError } from '../utils/ApiError.js'
 import { User } from "../models/user.models.js" // can input { } if the export is not default
 import { uploadOnCloudinary } from '../utils/cloudinary.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
+import jwt  from 'jsonwebtoken'
 
 const generateAccessAndRefereshTokens = async(userId) => {
     // console.log(userId);
@@ -10,9 +11,9 @@ const generateAccessAndRefereshTokens = async(userId) => {
         const user = await User.findById(userId)
         // console.log(user);
         const accessToken = user.generateAccessToken()
-        console.log("accessToken",accessToken);
+        // console.log("accessToken",accessToken);
         const refereshToken = user.generateRefreshToken()
-        console.log("refereshToken",refereshToken);
+        // console.log("refereshToken",refereshToken);
 
         user.refreshToken = refereshToken
         await user.save({validateBeforeSave: false}) // while using mongodb method all the checking will kickin from the model so we use {validateBeforeSave: false}
@@ -39,7 +40,7 @@ const registerUser = asyncHandler( async(req, res) => {
 
     const {fullName, username, email, password} = req.body  // to get details from frontend
     // console.log("email:",email);
-    console.log(req.files);
+    // console.log(req.files);
 
 
     // for one 
@@ -92,12 +93,12 @@ const registerUser = asyncHandler( async(req, res) => {
         password,
         username: usernameLower,
     })
-    console.log(user);
+    // console.log(user);
     
     const createdUser = User.findById(user._id).select(
         "-password -refreshToken" // all this will be not selected because all are seleced by default
     ) // finding if the user exist
-    console.log('createduser',createdUser);
+    // console.log('createduser',createdUser);
     
     if(!createdUser){
         throw new ApiError(500, "something went wrong while registeing the user ")
@@ -188,8 +189,53 @@ const logoutUser = asyncHandler(async(req, res) => {
     .json(new ApiResponse(200,{},"User Logged out"))
 })
 
+const refereshAccessToken = asyncHandler(async (req, res) => {
+    const incomingRefereshToken = req.cookie.refereshToken || req.body.refereshToken // body se mobile se aata h refershToken
+
+    if (incomingRefereshToken) {
+        throw new ApiError(401, "uauthorized request") // because the token sahi nahi h 
+    }
+
+    try {
+        const decodedToken = jwt.verify(
+            incomingRefereshToken,
+            process.env.REFRESH_TOKEN_SECRET
+        )
+    
+        const user = await User.findById(decodedToken?._id);
+        if (!user) {
+            throw new ApiError(401, "invalid referesh token")
+        }
+        if(incomingRefereshToken !== user?.refreshToken){
+            throw new ApiError(401, "refersh token is expired or used")
+        }
+    
+        const options = {
+            httpOnly: true,
+            secure: true
+            // now the cookies can be modified by server only
+        }
+    
+        const {accessToken, newRefreshToken} = await generateAccessAndRefereshTokens(user._id)
+    
+        return res
+        .status(200)
+        .cookie('accessToken',accessToken, options)
+        .cookie('refreshToken',newRefreshToken, options)
+        .json(
+            new ApiResponse(
+                200,
+                {accessToken, refereshToken: newRefreshToken},
+                "Access Token refershed successfully"
+            )
+        )
+    } catch (error) {
+        throw new ApiError(401,error?.message || "invalid refresh token")
+    }
+})
 export {
     registerUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    refereshAccessToken
 }
