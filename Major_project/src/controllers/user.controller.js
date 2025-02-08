@@ -5,6 +5,7 @@ import { uploadOnCloudinary } from '../utils/cloudinary.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
 import jwt  from 'jsonwebtoken'
 import { Subscription } from '../models/subscription.models.js'
+import mongoose from 'mongoose'
 
 const generateAccessAndRefereshTokens = async(userId) => {
     // console.log(userId);
@@ -443,6 +444,57 @@ const getUserChannelProfile = asyncHandler(async(req, res) => {
     .json(new ApiResponse(200, channel[0], "channel found successfully"))
 })
     
+const getWatchHistory = asyncHandler(async(req, res) => {
+    // req.user => user
+    // find the user
+    // populate the watch history
+    // return response
+    const user = await User.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(req.user._id)
+            }
+        },
+        {
+            $lookup: {
+                from: "videos",
+                localField: "watchHistory",
+                foreignField: "_id",
+                as: "watchHistory",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "onwer",
+                            foreignField: "_id",
+                            as: "onwer",
+                            pipeline:[
+                                {
+                                    $project: {
+                                        fullName: 1,
+                                        username: 1,
+                                        avatar: 1
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $addFields: {
+                            onwer: {
+                                $first: "$onwer",
+                            }
+                        }
+                    },
+                ]
+            }
+        },
+    ])
+    // req.user._id // mongoos gives a string interview question
+    return res
+    .status(200)
+    .json(new ApiResponse(200, user[0].watchHistory, "watch history fetched successfully"))
+})
 export {
     registerUser,
     loginUser,
@@ -453,5 +505,6 @@ export {
     updateAccountDetails,
     updateUserAvatar,
     updateUserCoverImage,
-    getUserChannelProfile
+    getUserChannelProfile,
+    getWatchHistory
 }
