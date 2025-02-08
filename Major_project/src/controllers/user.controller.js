@@ -4,6 +4,7 @@ import { User } from "../models/user.models.js" // can input { } if the export i
 import { uploadOnCloudinary } from '../utils/cloudinary.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
 import jwt  from 'jsonwebtoken'
+import { Subscription } from '../models/subscription.models.js'
 
 const generateAccessAndRefereshTokens = async(userId) => {
     // console.log(userId);
@@ -52,6 +53,11 @@ const registerUser = asyncHandler( async(req, res) => {
         [fullName, email, username, password].some((field) => {
             field?.trim() === ""
     })
+
+    // undertanding trim() method:
+    //const str = "   Hello, World!   ";
+    // const trimmedStr = str.trim();
+    // console.log(trimmedStr); // "Hello, World!"
     ) {
         throw new ApiError(400, "All field are required")
     }
@@ -360,6 +366,82 @@ const updateUserCoverImage = asyncHandler(async(req, res) => {
     .json(
         new ApiResponse(200, user, "cover image updated successfully"))
     })
+
+const getUserChannelProfile = asyncHandler(async(req, res) => {
+    // req.params => username
+    // find the user
+    // return response
+
+    const {username} = req.params // params means data from the url like /user/:username
+    if(!username?.trim()){
+        throw new ApiError(400, "username is required")
+    }
+
+    // User.find({username})
+    const channel = await User.aggregate([
+        {
+            $match: {
+                username: username?.toLowerCase()
+            }
+        },
+        {
+            $lookup:{
+                from: 'subscriptions',
+                localField: '_id',
+                foreignField: 'Channel',
+                as: 'subscribers'
+            }
+        },
+        {
+            $lookup:{
+                from: "subscriptions",
+                localField:"_id",
+                foreignField: "subscriber",
+                as: "subscribedChannels"
+            }
+        },
+        {
+            $addFields:{
+                SubscriptionCount: {
+                    $size: "$subscribers" // $ for field
+                },
+                SubscribedChannelCount: {
+                    $size: "$subscribedChannels"
+                },
+                issubscribed: {
+                    $cond: {
+                        if: {
+                            $in: [req.user?._id, "$subscribers.subscriber"]
+                        },
+                        then: true,
+                        else: false
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                fullName: 1,
+                username: 1,
+                subscribers: 1,
+                subscribedChannels: 1,
+                issubscribed: 1,
+                avatar: 1,
+                coverImage: 1,
+                email: 1,
+            }
+        }
+    ])
+    // console.log(channel);  
+
+    if(!channel?.length){
+        throw new ApiError(404, "channel not found")
+    }
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, channel[0], "channel found successfully"))
+})
     
 export {
     registerUser,
@@ -370,5 +452,6 @@ export {
     getCurrentUser,
     updateAccountDetails,
     updateUserAvatar,
-    updateUserCoverImage
+    updateUserCoverImage,
+    getUserChannelProfile
 }
